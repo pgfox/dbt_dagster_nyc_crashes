@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+.dagster/
+*.egg-info/
+data/*.csv
+.tmp_dagster_home*/
+.DS_Store
