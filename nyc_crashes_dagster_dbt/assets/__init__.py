@@ -9,3 +9,4 @@ from nyc_crashes_dagster_dbt.assets.checks import (
     vehicles_raw_has_rows,
     vehicles_raw_no_duplicate_pks,
 )
+from nyc_crashes_dagster_dbt.assets.dbt_assets import nyc_crashes_dbt_assets

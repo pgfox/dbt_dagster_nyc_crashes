@@ -1,0 +1,107 @@
+version: 2
+
+models:
+  - name: stg_crashes
+    description: Staged crash records with typed columns and renamed numeric fields
+    columns:
+      - name: collision_id
+        description: Primary key
+        tests:
+          - not_null
+
+      - name: crash_date
+        description: Date of the crash
+        tests:
+          - not_null
+
+      - name: crash_time
+        description: Time of the crash
+        tests:
+          - not_null
+
+      - name: persons_injured
+        tests:
+          - is_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+
+      - name: persons_killed
+        tests:
+          - is_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+
+      - name: pedestrians_injured
+        tests:
+          - is_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+
+      - name: pedestrians_killed
+        tests:
+          - is_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+
+      - name: cyclist_injured
+        tests:
+          - is_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+
+      - name: cyclist_killed
+        tests:
+          - is_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+
+      - name: motorist_injured
+        tests:
+          - is_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+
+      - name: motorist_killed
+        tests:
+          - is_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+
+  - name: stg_persons
+    description: Staged person records with typed date/time columns
+    columns:
+      - name: unique_id
+        description: Primary key
+        tests:
+          - not_null
+
+      - name: collision_id
+        description: FK to stg_crashes
+        tests:
+          - not_null
+
+      - name: crash_date
+        description: Date of the crash
+        tests:
+          - not_null
+
+      - name: crash_time
+        description: Time of the crash
+        tests:
+          - not_null
+
+  - name: stg_vehicles
+    description: Staged vehicle records
+    columns:
+      - name: unique_id
+        description: Primary key
+        tests:
+          - not_null

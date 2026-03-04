@@ -1,0 +1,14 @@
+# Local dev — uses OS authentication (no password needed).
+# For production, replace with env_var() references.
+nyc_crashes:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      port: 5432
+      dbname: nyc_crashes
+      user: "{{ env_var('DBT_USER', 'pfox') }}"
+      password: ""
+      schema: public
+      threads: 4

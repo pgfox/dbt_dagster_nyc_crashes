@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: Raw ingestion layer loaded by Dagster
+    tables:
+      - name: crashes
+        description: "Motor vehicle collision records (PK: collision_id)"
+        meta:
+          dagster:
+            asset_key: ["crashes_raw"]
+      - name: persons
+        description: "Person-level records per collision (PK: unique_id)"
+        meta:
+          dagster:
+            asset_key: ["persons_raw"]
+      - name: vehicles
+        description: "Vehicle-level records per collision (PK: unique_id)"
+        meta:
+          dagster:
+            asset_key: ["vehicles_raw"]

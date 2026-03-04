@@ -1,0 +1,23 @@
+select
+    unique_id,
+    collision_id,
+    crash_date::date        as crash_date,
+    crash_time::time        as crash_time,
+    person_id,
+    person_type,
+    person_injury,
+    vehicle_id,
+    bodily_injury,
+    position_in_vehicle,
+    safety_equipment,
+    ped_location,
+    ped_action,
+    complaint,
+    ped_role,
+    contributing_factor_1,
+    contributing_factor_2,
+    person_sex,
+    person_age,
+    ejection,
+    emotional_status
+from {{ source('raw', 'persons') }}

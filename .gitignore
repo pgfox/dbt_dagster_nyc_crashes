@@ -6,3 +6,6 @@ __pycache__/
 data/*.csv
 .tmp_dagster_home*/
 .DS_Store
+nyc_crashes_dagster_dbt/dbt/target/
+nyc_crashes_dagster_dbt/dbt/logs/
+nyc_crashes_dagster_dbt/dbt/dbt_packages/

@@ -9,6 +9,8 @@ requires-python = ">=3.10"
 dependencies = [
     "dagster",
     "dagster-webserver",
+    "dagster-dbt",
+    "dbt-postgres",
     "psycopg2-binary",
 ]
 
