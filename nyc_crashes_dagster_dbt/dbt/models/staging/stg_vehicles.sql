@@ -1,3 +1,27 @@
--- TODO: add type casts and column selection
-select *
+select
+    unique_id,
+    collision_id,
+    crash_date::date                    as crash_date,
+    crash_time::time                    as crash_time,
+    vehicle_id,
+    state_registration,
+    vehicle_type,
+    vehicle_make,
+    vehicle_model,
+    nullif(vehicle_year::integer, 9999)  as vehicle_year,
+    travel_direction,
+    nullif(vehicle_occupants::integer, 999) as vehicle_occupants,
+    driver_sex,
+    driver_license_status,
+    driver_license_jurisdiction,
+    pre_crash,
+    point_of_impact,
+    vehicle_damage,
+    vehicle_damage_1,
+    vehicle_damage_2,
+    vehicle_damage_3,
+    public_property_damage,
+    public_property_damage_type,
+    contributing_factor_1,
+    contributing_factor_2
 from {{ source('raw', 'vehicles') }}

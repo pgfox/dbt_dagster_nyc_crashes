@@ -99,9 +99,40 @@ models:
           - not_null
 
   - name: stg_vehicles
-    description: Staged vehicle records
+    description: Staged vehicle records with typed date/time and numeric columns
     columns:
       - name: unique_id
         description: Primary key
         tests:
           - not_null
+
+      - name: collision_id
+        description: FK to stg_crashes
+        tests:
+          - not_null
+
+      - name: crash_date
+        description: Date of the crash
+        tests:
+          - not_null
+
+      - name: crash_time
+        description: Time of the crash
+        tests:
+          - not_null
+
+      - name: vehicle_year
+        description: Model year of the vehicle
+        tests:
+          - is_between:
+              arguments:
+                min_value: 1900
+                max_value: 2030
+
+      - name: vehicle_occupants
+        description: Number of occupants in the vehicle
+        tests:
+          - is_between:
+              arguments:
+                min_value: 0
+                max_value: 200
