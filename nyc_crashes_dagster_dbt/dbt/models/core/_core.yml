@@ -64,3 +64,53 @@ models:
                 field: crashed_vehicle_id
       - name: damages
         description: "Damage description for this slot."
+
+  - name: persons
+    description: "One row per person-crash record. Surrogate PK is a deterministic md5 hash over collision_id and person_id."
+    columns:
+      - name: person_record_id
+        description: "Surrogate PK: md5(concat_ws('|', collision_id, person_id))."
+        tests:
+          - unique
+          - not_null
+      - name: collision_id
+        description: "Foreign key to crashes; identifies the crash event."
+      - name: crash_date
+        description: "Date of the crash."
+      - name: crash_time
+        description: "Time of the crash."
+      - name: person_id
+        description: "Source system person identifier (may be null)."
+      - name: person_type
+        description: "Role of the person (e.g. Occupant, Pedestrian, Bicyclist)."
+      - name: person_injury
+        description: "Injury severity."
+      - name: bodily_injury
+        description: "Specific body area injured."
+      - name: position_in_vehicle
+        description: "Seating position in the vehicle."
+      - name: safety_equipment
+        description: "Safety equipment in use at time of crash."
+      - name: complaint
+        description: "Physical complaint reported."
+      - name: person_sex
+        description: "Sex of the person."
+      - name: person_age
+        description: "Age of the person."
+      - name: ejection
+        description: "Whether the person was ejected from the vehicle."
+      - name: emotional_status
+        description: "Emotional status of the person."
+
+  - name: crashes
+    description: "One row per crash event. Natural PK is collision_id."
+    columns:
+      - name: collision_id
+        description: "Natural PK; source system crash identifier."
+        tests:
+          - unique
+          - not_null
+      - name: crash_date
+        description: "Date of the crash."
+      - name: crash_time
+        description: "Time of the crash."

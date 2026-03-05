@@ -10,14 +10,14 @@ nyc_crashes_dbt_project = DbtProject(
 nyc_crashes_dbt_project.prepare_if_dev()
 
 
-class _StagingTranslator(DagsterDbtTranslator):
-    def get_group_name(self, dbt_resource_props: dict) -> str:
-        return "staging"
+# class _StagingTranslator(DagsterDbtTranslator):
+#     def get_group_name(self, dbt_resource_props: dict) -> str:
+#         return "staging"
 
 
 @dbt_assets(
     manifest=nyc_crashes_dbt_project.manifest_path,
-    dagster_dbt_translator=_StagingTranslator(),
+    # dagster_dbt_translator=_StagingTranslator(),
 )
 def nyc_crashes_dbt_assets(context, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
