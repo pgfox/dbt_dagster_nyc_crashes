@@ -1,0 +1,66 @@
+version: 2
+
+models:
+  - name: crashed_vehicle
+    description: "One row per vehicle-crash record. Surrogate PK is a deterministic md5 hash over natural business-key columns."
+    columns:
+      - name: crashed_vehicle_id
+        description: "Surrogate PK: md5(concat_ws('|', collision_id, vehicle_id, state_registration, vehicle_type, vehicle_make, vehicle_model))"
+        tests:
+          - unique
+          - not_null
+      - name: collision_id
+        description: "Foreign key to crashes; identifies the crash event."
+      - name: crash_date
+        description: "Date of the crash."
+      - name: crash_time
+        description: "Time of the crash."
+      - name: vehicle_id
+        description: "Source vehicle identifier (may be null)."
+      - name: state_registration
+        description: "State where the vehicle is registered."
+      - name: vehicle_type
+        description: "Type/category of the vehicle."
+      - name: vehicle_make
+        description: "Make of the vehicle."
+      - name: vehicle_model
+        description: "Model of the vehicle."
+      - name: vehicle_year
+        description: "Model year (null-safe; 9999 sentinel already removed upstream)."
+      - name: travel_direction
+        description: "Direction of travel at time of crash."
+      - name: vehicle_occupants
+        description: "Number of occupants (null-safe; 999 sentinel already removed upstream)."
+      - name: driver_sex
+        description: "Sex of the driver."
+      - name: driver_license_status
+        description: "License status of the driver."
+      - name: driver_license_jurisdiction
+        description: "Jurisdiction that issued the driver license."
+      - name: pre_crash
+        description: "Vehicle action immediately before the crash."
+      - name: point_of_impact
+        description: "Location on the vehicle where first impact occurred."
+      - name: public_property_damage
+        description: "Whether public property was damaged (Y/N)."
+      - name: public_property_damage_type
+        description: "Type of public property damaged."
+
+  - name: vehicle_damages
+    description: "Unpivoted damage columns from crashed_vehicle. One row per non-null damage slot per vehicle-crash record."
+    columns:
+      - name: vehicle_damage_id
+        description: "Surrogate PK: md5(crashed_vehicle_id || '_' || damage_position)."
+        tests:
+          - unique
+          - not_null
+      - name: crashed_vehicle_id
+        description: "FK to core.crashed_vehicle."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('crashed_vehicle')
+                field: crashed_vehicle_id
+      - name: damages
+        description: "Damage description for this slot."

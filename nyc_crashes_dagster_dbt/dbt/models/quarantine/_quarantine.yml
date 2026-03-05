@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_crashes_dirty
+    description: Crash records that fail at least one data quality check (null PKs or out-of-range counts).
+
+  - name: stg_persons_dirty
+    description: Person records that fail at least one data quality check (null PKs or required fields).
+
+  - name: stg_vehicles_dirty
+    description: Vehicle records that fail at least one data quality check (null PKs, required fields, or out-of-range values).

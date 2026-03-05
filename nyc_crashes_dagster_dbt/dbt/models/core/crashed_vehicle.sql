@@ -1,0 +1,28 @@
+select
+    md5(concat_ws('|',
+        collision_id::text,
+        coalesce(vehicle_id, ''),
+        coalesce(state_registration, ''),
+        coalesce(vehicle_type, ''),
+        coalesce(vehicle_make, ''),
+        coalesce(vehicle_model, '')
+    ))                              as crashed_vehicle_id,
+    collision_id,
+    crash_date,
+    crash_time,
+    vehicle_id,
+    state_registration,
+    vehicle_type,
+    vehicle_make,
+    vehicle_model,
+    vehicle_year,
+    travel_direction,
+    vehicle_occupants,
+    driver_sex,
+    driver_license_status,
+    driver_license_jurisdiction,
+    pre_crash,
+    point_of_impact,
+    public_property_damage,
+    public_property_damage_type
+from {{ ref('stg_vehicles_clean') }}

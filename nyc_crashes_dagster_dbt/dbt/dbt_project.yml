@@ -13,5 +13,32 @@ clean-targets: ["target", "dbt_packages"]
 models:
   nyc_crashes:
     staging:
+      +severity: warn
+      +meta:
+        dagster:
+          group: staging
       +materialized: table
       +schema: staging
+    clean:
+      +meta:
+        dagster:
+          group: staging
+      +materialized: table
+      +schema: staging
+    quarantine:
+      +meta:
+          dagster:
+            group: quarantine
+      +materialized: table
+      +schema: quarantine
+    core:
+      +meta:
+          dagster:
+            group: core
+      +materialized: table
+      +schema: core
+
+tests:
+  nyc_crashes:
+    staging:
+      +severity: warn

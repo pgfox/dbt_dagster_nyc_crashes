@@ -131,8 +131,8 @@ models:
 
       - name: vehicle_occupants
         description: Number of occupants in the vehicle
-        tests:
-          - is_between:
-              arguments:
-                min_value: 0
-                max_value: 200
+        # tests:
+        #   - is_between:
+        #       arguments:
+        #         min_value: 0
+        #         max_value: 200

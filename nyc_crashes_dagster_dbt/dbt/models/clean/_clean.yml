@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_crashes_clean
+    description: Crash records that pass all data quality checks. Safe for downstream analytics consumption.
+
+  - name: stg_persons_clean
+    description: Person records that pass all data quality checks. Safe for downstream analytics consumption.
+
+  - name: stg_vehicles_clean
+    description: Vehicle records that pass all data quality checks. Safe for downstream analytics consumption.
