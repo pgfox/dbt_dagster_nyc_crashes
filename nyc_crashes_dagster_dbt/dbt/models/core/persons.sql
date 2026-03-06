@@ -1,8 +1,5 @@
 select
-    md5(concat_ws('|',
-        collision_id::text,
-        coalesce(person_id, '')
-    ))                          as person_record_id,
+    {{ dbt_utils.generate_surrogate_key(['collision_id', 'person_id']) }} as person_record_id,
     collision_id,
     crash_date,
     crash_time,

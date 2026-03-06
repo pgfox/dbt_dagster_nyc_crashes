@@ -1,13 +1,9 @@
 with source as (
     select
-        md5(concat_ws('|',
-            collision_id::text,
-            coalesce(vehicle_id, ''),
-            coalesce(state_registration, ''),
-            coalesce(vehicle_type, ''),
-            coalesce(vehicle_make, ''),
-            coalesce(vehicle_model, '')
-        ))              as crashed_vehicle_id,
+        {{ dbt_utils.generate_surrogate_key([
+            'collision_id', 'vehicle_id', 'state_registration',
+            'vehicle_type', 'vehicle_make', 'vehicle_model'
+        ]) }}           as crashed_vehicle_id,
         vehicle_damage,
         vehicle_damage_1,
         vehicle_damage_2,
@@ -24,7 +20,7 @@ unpivoted as (
     select crashed_vehicle_id, 3,                    vehicle_damage_3        from source where vehicle_damage_3 is not null
 )
 select
-    md5(crashed_vehicle_id || '_' || damage_position::text) as vehicle_damage_id,
+    {{ dbt_utils.generate_surrogate_key(['crashed_vehicle_id', 'damage_position']) }} as vehicle_damage_id,
     crashed_vehicle_id,
     damages
 from unpivoted

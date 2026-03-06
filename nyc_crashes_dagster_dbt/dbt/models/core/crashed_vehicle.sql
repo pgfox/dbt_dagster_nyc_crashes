@@ -1,12 +1,8 @@
 select
-    md5(concat_ws('|',
-        collision_id::text,
-        coalesce(vehicle_id, ''),
-        coalesce(state_registration, ''),
-        coalesce(vehicle_type, ''),
-        coalesce(vehicle_make, ''),
-        coalesce(vehicle_model, '')
-    ))                              as crashed_vehicle_id,
+    {{ dbt_utils.generate_surrogate_key([
+        'collision_id', 'vehicle_id', 'state_registration',
+        'vehicle_type', 'vehicle_make', 'vehicle_model'
+    ]) }}                           as crashed_vehicle_id,
     collision_id,
     crash_date,
     crash_time,
