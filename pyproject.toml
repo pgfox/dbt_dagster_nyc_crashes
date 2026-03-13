@@ -12,6 +12,7 @@ dependencies = [
     "dagster-dbt",
     "dbt-postgres",
     "psycopg2-binary",
+    "requests",
 ]
 
 [project.optional-dependencies]

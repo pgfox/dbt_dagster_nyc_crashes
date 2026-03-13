@@ -2,7 +2,7 @@ from dagster import Definitions, load_assets_from_modules, load_asset_checks_fro
 from dagster_dbt import DbtCliResource
 
 from nyc_crashes_dagster_dbt import assets
-from nyc_crashes_dagster_dbt.resources import PostgresResource
+from nyc_crashes_dagster_dbt.resources import PostgresResource, OpenMeteoResource
 from nyc_crashes_dagster_dbt.assets.dbt_assets import DBT_PROJECT_DIR
 
 defs = Definitions(
@@ -14,6 +14,7 @@ defs = Definitions(
             port=5432,
             database="nyc_crashes",
         ),
+        "open_meteo": OpenMeteoResource(),
         "dbt": DbtCliResource(
             project_dir=str(DBT_PROJECT_DIR),
             profiles_dir=str(DBT_PROJECT_DIR),
