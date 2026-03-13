@@ -114,3 +114,19 @@ models:
         description: "Date of the crash."
       - name: crash_time
         description: "Time of the crash."
+      - name: location
+        description: "Point geometry string (lat/lon) from source."
+      - name: borough
+        description: "NYC borough (lowercased)."
+      - name: zip_code
+        description: "ZIP code of crash location."
+      - name: latitude
+        description: "Latitude coordinate."
+      - name: longitude
+        description: "Longitude coordinate."
+      - name: on_street_name
+        description: "Street where crash occurred."
+      - name: cross_street_name
+        description: "Nearest cross street."
+      - name: off_street_name
+        description: "Off-street location (e.g. parking lot)."
