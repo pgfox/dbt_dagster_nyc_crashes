@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: "Date dimension derived from crash dates. One row per calendar date."
+    columns:
+      - name: date_day
+        description: "Calendar date (PK)."
+        tests:
+          - unique
+          - not_null
+      - name: day_of_week
+        description: "Day of week (0=Sun, 6=Sat)."
+      - name: day_name
+        description: "Day name (e.g. Monday)."
+      - name: month
+        description: "Month number (1-12)."
+      - name: quarter
+        description: "Quarter (1-4)."
+      - name: year
+        description: "Four-digit year."
+
+  - name: fct_crashes
+    description: "One row per crash with pre-aggregated vehicle and injury counts. Join to core.zip_code for borough, dim_date for date attributes."
+    columns:
+      - name: collision_id
+        description: "PK — crash identifier."
+        tests:
+          - unique
+          - not_null
+      - name: crash_date
+        description: "Date of crash; FK to dim_date.date_day."
+      - name: crash_hour
+        description: "Hour of crash (0-23)."
+      - name: zip_code
+        description: "FK to core.zip_code for borough lookup."
+      - name: on_street_name
+        description: "Street where crash occurred."
+      - name: cross_street_name
+        description: "Nearest cross street."
+      - name: off_street_name
+        description: "Off-street location."
+      - name: vehicle_count
+        description: "Number of vehicles involved."
+      - name: persons_injured
+        description: "Number of persons injured."
+      - name: persons_killed
+        description: "Number of persons killed."
