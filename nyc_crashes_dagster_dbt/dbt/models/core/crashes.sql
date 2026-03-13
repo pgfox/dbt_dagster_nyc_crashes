@@ -3,7 +3,6 @@ select
     crash_date,
     crash_time,
     location,
-    borough,
     zip_code,
     latitude,
     longitude,

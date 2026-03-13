@@ -1,8 +1,6 @@
 select
     {{ dbt_utils.generate_surrogate_key(['collision_id', 'person_id']) }} as person_record_id,
     collision_id,
-    crash_date,
-    crash_time,
     person_id,
     person_type,
     person_injury,

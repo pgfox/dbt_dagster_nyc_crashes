@@ -75,10 +75,6 @@ models:
           - not_null
       - name: collision_id
         description: "Foreign key to crashes; identifies the crash event."
-      - name: crash_date
-        description: "Date of the crash."
-      - name: crash_time
-        description: "Time of the crash."
       - name: person_id
         description: "Source system person identifier (may be null)."
       - name: person_type
@@ -116,8 +112,6 @@ models:
         description: "Time of the crash."
       - name: location
         description: "Point geometry string (lat/lon) from source."
-      - name: borough
-        description: "NYC borough (lowercased)."
       - name: zip_code
         description: "ZIP code of crash location."
       - name: latitude
@@ -130,3 +124,14 @@ models:
         description: "Nearest cross street."
       - name: off_street_name
         description: "Off-street location (e.g. parking lot)."
+
+  - name: zip_code
+    description: "Dimension mapping zip codes to NYC boroughs. One row per zip code."
+    columns:
+      - name: zip_code
+        description: "Natural PK; 5-digit ZIP code string."
+        tests:
+          - unique
+          - not_null
+      - name: borough
+        description: "NYC borough associated with this ZIP code (lowercased)."
