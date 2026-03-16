@@ -46,6 +46,32 @@ models:
       - name: borough
         description: "NYC borough associated with this ZIP code (lowercased)."
 
+  - name: dim_age
+    description: "Age dimension. One row per integer age 0–130. Join to fct_persons on person_age."
+    columns:
+      - name: person_age
+        description: "Integer age (PK). FK from fct_persons.person_age."
+        tests:
+          - unique
+          - not_null
+      - name: age_band
+        description: "FK to dim_age_band.age_band. Age bucket label for this age."
+
+  - name: dim_age_band
+    description: "Age band dimension. 8 rows including 'unknown'. Join to fct_persons on age_band."
+    columns:
+      - name: age_band
+        description: "Age band label (PK): unknown, <18, 18-24, 25-34, 35-44, 45-54, 55-64, 65+."
+        tests:
+          - unique
+          - not_null
+      - name: age_min
+        description: "Inclusive lower bound of age range (null for unknown)."
+      - name: age_max
+        description: "Inclusive upper bound of age range (null for unknown)."
+      - name: sort_order
+        description: "Integer for ordering age bands chronologically (0=unknown, 1=<18 ... 7=65+)."
+
   - name: fct_crashes
     description: "One row per crash with pre-aggregated vehicle and injury counts. Join to core.zip_code for borough, dim_date for date attributes."
     columns:
@@ -72,3 +98,42 @@ models:
         description: "Number of persons injured."
       - name: persons_killed
         description: "Number of persons killed."
+
+  - name: fct_persons
+    description: "One row per person involved in a crash. Grain: person-crash. Join to fct_crashes on collision_id, dim_date on crash_date, dim_hour on crash_hour, dim_zip_code on zip_code, dim_age on person_age."
+    columns:
+      - name: person_record_id
+        description: "PK — surrogate key (md5 of collision_id + person_id)."
+        tests:
+          - unique
+          - not_null
+      - name: collision_id
+        description: "FK to fct_crashes.collision_id."
+        tests:
+          - not_null
+      - name: crash_date
+        description: "FK to dim_date.date_day."
+      - name: crash_hour
+        description: "FK to dim_hour.crash_hour."
+      - name: zip_code
+        description: "FK to dim_zip_code.zip_code (from crash record)."
+      - name: person_type
+        description: "Role in crash: Occupant, Pedestrian, Bicyclist, etc."
+      - name: person_sex
+        description: "Sex of person (m/f/null)."
+      - name: person_age
+        description: "FK to dim_age.person_age. Null when age is unknown."
+      - name: person_injury
+        description: "Injury severity: injured, killed, uninjured, or null."
+      - name: bodily_injury
+        description: "Specific body area injured."
+      - name: safety_equipment
+        description: "Safety equipment in use (e.g. lap belt & harness, none)."
+      - name: position_in_vehicle
+        description: "Position in vehicle (e.g. driver, front passenger)."
+      - name: ejection
+        description: "Ejection status: ejected, not ejected, trapped, unknown."
+      - name: is_injured
+        description: "True when person_injury = 'injured'."
+      - name: is_killed
+        description: "True when person_injury = 'killed'."
