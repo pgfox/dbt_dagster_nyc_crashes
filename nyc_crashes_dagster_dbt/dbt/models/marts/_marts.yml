@@ -20,6 +20,21 @@ models:
       - name: year
         description: "Four-digit year."
 
+  - name: dim_hour
+    description: "Hour-of-day dimension. One row per hour (0–23). Join to fct_crashes on crash_hour."
+    columns:
+      - name: crash_hour
+        description: "Hour of day 0–23 (PK). FK from fct_crashes.crash_hour."
+        tests:
+          - unique
+          - not_null
+      - name: hour_label
+        description: "12-hour formatted label (e.g. '08 AM', '01 PM')."
+      - name: time_of_day_band
+        description: "Broad time band: Night (0-5), Morning (6-11), Afternoon (12-17), Evening (18-23)."
+      - name: rush_hour_flag
+        description: "True for AM rush (7-9) and PM rush (16-18)."
+
   - name: fct_crashes
     description: "One row per crash with pre-aggregated vehicle and injury counts. Join to core.zip_code for borough, dim_date for date attributes."
     columns:
