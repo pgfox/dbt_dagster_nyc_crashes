@@ -72,6 +72,21 @@ models:
       - name: sort_order
         description: "Integer for ordering age bands chronologically (0=unknown, 1=<18 ... 7=65+)."
 
+  - name: dim_vehicle
+    description: "Vehicle dimension. One row per distinct (vehicle_type, vehicle_make, vehicle_model) combination."
+    columns:
+      - name: dim_vehicle_id
+        description: "Surrogate PK: md5(vehicle_type, vehicle_make, vehicle_model)."
+        tests:
+          - unique
+          - not_null
+      - name: vehicle_type
+        description: "Type/category of the vehicle (e.g. sedan, suv, taxi)."
+      - name: vehicle_make
+        description: "Manufacturer of the vehicle (e.g. toyota, ford)."
+      - name: vehicle_model
+        description: "Model name of the vehicle (e.g. camry, f150)."
+
   - name: fct_crashes
     description: "One row per crash with pre-aggregated vehicle and injury counts. Join to core.zip_code for borough, dim_date for date attributes."
     columns:
@@ -137,3 +152,48 @@ models:
         description: "True when person_injury = 'injured'."
       - name: is_killed
         description: "True when person_injury = 'killed'."
+
+  - name: fct_vehicles
+    description: "One row per vehicle involved in a crash. Grain: vehicle-crash. Count rows to count crashed vehicles. Join to fct_crashes on collision_id, dim_date on crash_date, dim_hour on crash_hour, dim_zip_code on zip_code, dim_vehicle on dim_vehicle_id."
+    columns:
+      - name: crashed_vehicle_id
+        description: "PK — surrogate key (md5 of collision_id + vehicle natural keys)."
+        tests:
+          - unique
+          - not_null
+      - name: collision_id
+        description: "FK to fct_crashes.collision_id."
+        tests:
+          - not_null
+      - name: crash_date
+        description: "FK to dim_date.date_day."
+      - name: crash_hour
+        description: "FK to dim_hour.crash_hour."
+      - name: zip_code
+        description: "FK to dim_zip_code.zip_code."
+      - name: dim_vehicle_id
+        description: "FK to dim_vehicle.dim_vehicle_id."
+      - name: vehicle_type
+        description: "Type/category of the vehicle."
+      - name: vehicle_make
+        description: "Manufacturer of the vehicle."
+      - name: vehicle_model
+        description: "Model of the vehicle."
+      - name: vehicle_year
+        description: "Model year of the vehicle."
+      - name: driver_sex
+        description: "Sex of the driver (m/f/null)."
+      - name: vehicle_occupants
+        description: "Number of occupants in the vehicle."
+      - name: state_registration
+        description: "State where the vehicle is registered."
+      - name: travel_direction
+        description: "Direction of travel at time of crash."
+      - name: driver_license_status
+        description: "License status of the driver."
+      - name: pre_crash
+        description: "Vehicle action immediately before the crash."
+      - name: point_of_impact
+        description: "Location on the vehicle of first impact."
+      - name: public_property_damage
+        description: "Whether public property was damaged (Y/N)."
