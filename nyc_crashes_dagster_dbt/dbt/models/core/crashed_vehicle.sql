@@ -4,8 +4,6 @@ select
         'vehicle_type', 'vehicle_make', 'vehicle_model'
     ]) }}                           as crashed_vehicle_id,
     collision_id,
-    crash_date,
-    crash_time,
     vehicle_id,
     state_registration,
     vehicle_type,

@@ -1,0 +1,199 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: "Date dimension derived from crash dates. One row per calendar date."
+    columns:
+      - name: date_day
+        description: "Calendar date (PK)."
+        tests:
+          - unique
+          - not_null
+      - name: day_of_week
+        description: "Day of week (0=Sun, 6=Sat)."
+      - name: day_name
+        description: "Day name (e.g. Monday)."
+      - name: month
+        description: "Month number (1-12)."
+      - name: quarter
+        description: "Quarter (1-4)."
+      - name: year
+        description: "Four-digit year."
+
+  - name: dim_hour
+    description: "Hour-of-day dimension. One row per hour (0–23). Join to fct_crashes on crash_hour."
+    columns:
+      - name: crash_hour
+        description: "Hour of day 0–23 (PK). FK from fct_crashes.crash_hour."
+        tests:
+          - unique
+          - not_null
+      - name: hour_label
+        description: "12-hour formatted label (e.g. '08 AM', '01 PM')."
+      - name: time_of_day_band
+        description: "Broad time band: Night (0-5), Morning (6-11), Afternoon (12-17), Evening (18-23)."
+      - name: rush_hour_flag
+        description: "True for AM rush (7-9) and PM rush (16-18)."
+
+  - name: dim_zip_code
+    description: "ZIP code dimension. One row per ZIP code. Join to fct_crashes on zip_code."
+    columns:
+      - name: zip_code
+        description: "5-digit ZIP code string (PK). FK from fct_crashes.zip_code."
+        tests:
+          - unique
+          - not_null
+      - name: borough
+        description: "NYC borough associated with this ZIP code (lowercased)."
+
+  - name: dim_age
+    description: "Age dimension. One row per integer age 0–130. Join to fct_persons on person_age."
+    columns:
+      - name: person_age
+        description: "Integer age (PK). FK from fct_persons.person_age."
+        tests:
+          - unique
+          - not_null
+      - name: age_band
+        description: "FK to dim_age_band.age_band. Age bucket label for this age."
+
+  - name: dim_age_band
+    description: "Age band dimension. 8 rows including 'unknown'. Join to fct_persons on age_band."
+    columns:
+      - name: age_band
+        description: "Age band label (PK): unknown, <18, 18-24, 25-34, 35-44, 45-54, 55-64, 65+."
+        tests:
+          - unique
+          - not_null
+      - name: age_min
+        description: "Inclusive lower bound of age range (null for unknown)."
+      - name: age_max
+        description: "Inclusive upper bound of age range (null for unknown)."
+      - name: sort_order
+        description: "Integer for ordering age bands chronologically (0=unknown, 1=<18 ... 7=65+)."
+
+  - name: dim_vehicle
+    description: "Vehicle dimension. One row per distinct (vehicle_type, vehicle_make, vehicle_model) combination."
+    columns:
+      - name: dim_vehicle_id
+        description: "Surrogate PK: md5(vehicle_type, vehicle_make, vehicle_model)."
+        tests:
+          - unique
+          - not_null
+      - name: vehicle_type
+        description: "Type/category of the vehicle (e.g. sedan, suv, taxi)."
+      - name: vehicle_make
+        description: "Manufacturer of the vehicle (e.g. toyota, ford)."
+      - name: vehicle_model
+        description: "Model name of the vehicle (e.g. camry, f150)."
+
+  - name: fct_crashes
+    description: "One row per crash with pre-aggregated vehicle and injury counts. Join to core.zip_code for borough, dim_date for date attributes."
+    columns:
+      - name: collision_id
+        description: "PK — crash identifier."
+        tests:
+          - unique
+          - not_null
+      - name: crash_date
+        description: "Date of crash; FK to dim_date.date_day."
+      - name: crash_hour
+        description: "Hour of crash (0-23)."
+      - name: zip_code
+        description: "FK to core.zip_code for borough lookup."
+      - name: on_street_name
+        description: "Street where crash occurred."
+      - name: cross_street_name
+        description: "Nearest cross street."
+      - name: off_street_name
+        description: "Off-street location."
+      - name: vehicle_count
+        description: "Number of vehicles involved."
+      - name: persons_injured
+        description: "Number of persons injured."
+      - name: persons_killed
+        description: "Number of persons killed."
+
+  - name: fct_persons
+    description: "One row per person involved in a crash. Grain: person-crash. Join to fct_crashes on collision_id, dim_date on crash_date, dim_hour on crash_hour, dim_zip_code on zip_code, dim_age on person_age."
+    columns:
+      - name: person_record_id
+        description: "PK — surrogate key (md5 of collision_id + person_id)."
+        tests:
+          - unique
+          - not_null
+      - name: collision_id
+        description: "FK to fct_crashes.collision_id."
+        tests:
+          - not_null
+      - name: crash_date
+        description: "FK to dim_date.date_day."
+      - name: crash_hour
+        description: "FK to dim_hour.crash_hour."
+      - name: zip_code
+        description: "FK to dim_zip_code.zip_code (from crash record)."
+      - name: person_type
+        description: "Role in crash: Occupant, Pedestrian, Bicyclist, etc."
+      - name: person_sex
+        description: "Sex of person (m/f/null)."
+      - name: person_age
+        description: "FK to dim_age.person_age. Null when age is unknown."
+      - name: person_injury
+        description: "Injury severity: injured, killed, uninjured, or null."
+      - name: bodily_injury
+        description: "Specific body area injured."
+      - name: safety_equipment
+        description: "Safety equipment in use (e.g. lap belt & harness, none)."
+      - name: position_in_vehicle
+        description: "Position in vehicle (e.g. driver, front passenger)."
+      - name: ejection
+        description: "Ejection status: ejected, not ejected, trapped, unknown."
+      - name: is_injured
+        description: "True when person_injury = 'injured'."
+      - name: is_killed
+        description: "True when person_injury = 'killed'."
+
+  - name: fct_vehicles
+    description: "One row per vehicle involved in a crash. Grain: vehicle-crash. Count rows to count crashed vehicles. Join to fct_crashes on collision_id, dim_date on crash_date, dim_hour on crash_hour, dim_zip_code on zip_code, dim_vehicle on dim_vehicle_id."
+    columns:
+      - name: crashed_vehicle_id
+        description: "PK — surrogate key (md5 of collision_id + vehicle natural keys)."
+        tests:
+          - unique
+          - not_null
+      - name: collision_id
+        description: "FK to fct_crashes.collision_id."
+        tests:
+          - not_null
+      - name: crash_date
+        description: "FK to dim_date.date_day."
+      - name: crash_hour
+        description: "FK to dim_hour.crash_hour."
+      - name: zip_code
+        description: "FK to dim_zip_code.zip_code."
+      - name: dim_vehicle_id
+        description: "FK to dim_vehicle.dim_vehicle_id."
+      - name: vehicle_type
+        description: "Type/category of the vehicle."
+      - name: vehicle_make
+        description: "Manufacturer of the vehicle."
+      - name: vehicle_model
+        description: "Model of the vehicle."
+      - name: vehicle_year
+        description: "Model year of the vehicle."
+      - name: driver_sex
+        description: "Sex of the driver (m/f/null)."
+      - name: vehicle_occupants
+        description: "Number of occupants in the vehicle."
+      - name: state_registration
+        description: "State where the vehicle is registered."
+      - name: travel_direction
+        description: "Direction of travel at time of crash."
+      - name: driver_license_status
+        description: "License status of the driver."
+      - name: pre_crash
+        description: "Vehicle action immediately before the crash."
+      - name: point_of_impact
+        description: "Location on the vehicle of first impact."
+      - name: public_property_damage
+        description: "Whether public property was damaged (Y/N)."

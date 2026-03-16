@@ -37,6 +37,12 @@ models:
             group: core
       +materialized: table
       +schema: core
+    marts:
+      +meta:
+          dagster:
+            group: marts
+      +materialized: table
+      +schema: marts
 
 tests:
   nyc_crashes:
