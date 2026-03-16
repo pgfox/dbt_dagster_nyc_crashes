@@ -31,7 +31,8 @@ nyc_crashes_dagster_dbt/
 │   │   │   ├── staging/           # Type casting & string normalisation
 │   │   │   ├── clean/             # Filter out null PKs & invalid values
 │   │   │   ├── quarantine/        # Rows rejected by clean layer
-│   │   │   └── core/              # Analytics-ready tables
+│   │   │   ├── core/              # Surrogate-keyed analytics tables
+│   │   │   └── marts/             # Star-schema fact and dimension tables
 │   │   ├── macros/
 │   │   ├── packages.yml
 │   │   └── profiles.yml
@@ -94,6 +95,42 @@ Analytics-ready, one-row-per-grain tables with surrogate keys generated via `dbt
 | `crashed_vehicle` | One row per vehicle per crash | `crashed_vehicle_id` (surrogate) | 4,502,957 |
 | `persons` | One row per person per crash | `person_record_id` (surrogate) | 5,903,657 |
 | `vehicle_damages` | One row per damage slot per vehicle | `vehicle_damage_id` (surrogate) | 6,960,675 |
+
+### Marts (`marts` schema)
+
+Star-schema layer built on top of `core`. Dimensions carry descriptive attributes; facts carry grain keys plus degenerate dimensions for zero-join slicing.
+
+#### Dimensions
+
+| Model | Grain | PK | Rows |
+|---|---|---|---|
+| `dim_date` | One row per calendar date | `date_day` | 4,990 |
+| `dim_hour` | One row per hour 0–23 | `crash_hour` | 24 |
+| `dim_zip_code` | One row per ZIP code | `zip_code` | — |
+| `dim_age` | One row per integer age 0–130 | `person_age` | 131 |
+| `dim_age_band` | One row per age band | `age_band` | 8 |
+| `dim_vehicle` | One row per (type, make, model) | `dim_vehicle_id` | 30,130 |
+
+#### Facts
+
+| Model | Grain | PK | Rows |
+|---|---|---|---|
+| `fct_crashes` | One row per crash | `collision_id` | 2,245,591 |
+| `fct_persons` | One row per person per crash | `person_record_id` | 5,903,657 |
+| `fct_vehicles` | One row per vehicle per crash | `crashed_vehicle_id` | 4,502,957 |
+
+#### Key Join Paths
+
+| Fact | Dimension | Join Key |
+|---|---|---|
+| `fct_crashes` | `dim_date` | `crash_date` |
+| `fct_crashes` | `dim_hour` | `crash_hour` |
+| `fct_crashes` | `dim_zip_code` | `zip_code` |
+| `fct_persons` | `fct_crashes` | `collision_id` |
+| `fct_persons` | `dim_age` | `person_age` |
+| `fct_persons` | `dim_age_band` | `age_band` (via dim_age) |
+| `fct_vehicles` | `fct_crashes` | `collision_id` |
+| `fct_vehicles` | `dim_vehicle` | `dim_vehicle_id` |
 
 ---
 
