@@ -35,6 +35,17 @@ models:
       - name: rush_hour_flag
         description: "True for AM rush (7-9) and PM rush (16-18)."
 
+  - name: dim_zip_code
+    description: "ZIP code dimension. One row per ZIP code. Join to fct_crashes on zip_code."
+    columns:
+      - name: zip_code
+        description: "5-digit ZIP code string (PK). FK from fct_crashes.zip_code."
+        tests:
+          - unique
+          - not_null
+      - name: borough
+        description: "NYC borough associated with this ZIP code (lowercased)."
+
   - name: fct_crashes
     description: "One row per crash with pre-aggregated vehicle and injury counts. Join to core.zip_code for borough, dim_date for date attributes."
     columns:
