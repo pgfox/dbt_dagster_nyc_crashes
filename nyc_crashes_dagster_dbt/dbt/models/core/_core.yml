@@ -120,6 +120,10 @@ models:
         description: "Nearest cross street."
       - name: off_street_name
         description: "Off-street location (e.g. parking lot)."
+      - name: loaded_at
+        description: "Timestamp when the row was loaded into the raw table."
+      - name: _src_file
+        description: "Source CSV filename that produced this row."
 
   - name: zip_code
     description: "Dimension mapping zip codes to NYC boroughs. One row per zip code."
