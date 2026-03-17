@@ -1,3 +1,5 @@
+{{ config(materialized='incremental', unique_key='collision_id') }}
+
 select
     collision_id,
     crash_date,

@@ -1,3 +1,6 @@
+{% set core_crashes = adapter.get_relation(
+    database=target.database, schema='core', identifier='crashes') %}
+
 select
     {{ dbt.safe_cast('collision_id', 'bigint') }}                       as collision_id,
     {{ dbt.safe_cast('crash_date', 'date') }}                           as crash_date,
@@ -31,3 +34,9 @@ select
     loaded_at,
     _src_file
 from {{ source('raw', 'crashes') }}
+{% if core_crashes is not none %}
+where loaded_at > coalesce(
+    (select max(loaded_at) from {{ core_crashes }}),
+    '1900-01-01'::timestamptz
+)
+{% endif %}
