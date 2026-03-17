@@ -1,4 +1,10 @@
-select *
+select
+    *,
+    {{ dbt_utils.generate_surrogate_key([
+        'crash_date', 'crash_time', 'location', 'zip_code',
+        'latitude', 'longitude',
+        'on_street_name', 'cross_street_name', 'off_street_name'
+    ]) }} as row_hash
 from {{ ref('stg_crashes') }}
 where
     collision_id is not null

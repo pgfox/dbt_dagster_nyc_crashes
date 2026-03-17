@@ -122,6 +122,10 @@ models:
         description: "Off-street location (e.g. parking lot)."
       - name: loaded_at
         description: "Timestamp when the row was loaded into the raw table."
+      - name: row_hash
+        description: "MD5 hash of business columns for change detection."
+      - name: updated_at
+        description: "Timestamp of the most recent update (NULL if never updated after initial load)."
       - name: _src_file
         description: "Source CSV filename that produced this row."
 
