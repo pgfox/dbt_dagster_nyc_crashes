@@ -27,5 +27,7 @@ select
     {{ dbt.safe_cast('number_of_cyclist_injured', 'integer') }}         as cyclist_injured,
     {{ dbt.safe_cast('number_of_cyclist_killed', 'integer') }}          as cyclist_killed,
     {{ dbt.safe_cast('number_of_motorist_injured', 'integer') }}        as motorist_injured,
-    {{ dbt.safe_cast('number_of_motorist_killed', 'integer') }}         as motorist_killed
+    {{ dbt.safe_cast('number_of_motorist_killed', 'integer') }}         as motorist_killed,
+    loaded_at,
+    _src_file
 from {{ source('raw', 'crashes') }}

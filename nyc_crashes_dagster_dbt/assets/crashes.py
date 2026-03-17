@@ -33,6 +33,10 @@ def crashes_raw(context: AssetExecutionContext, postgres: PostgresResource):
             f"ALTER TABLE {SCHEMA}.{TABLE} "
             f"ADD COLUMN IF NOT EXISTS loaded_at TIMESTAMPTZ DEFAULT NOW()"
         )
+        cur.execute(
+            f"ALTER TABLE {SCHEMA}.{TABLE} "
+            f"ADD COLUMN IF NOT EXISTS _src_file TEXT"
+        )
 
     # Block 2 — Transactional load (rolls back TRUNCATE if COPY fails)
     with postgres.get_cursor() as cur:
@@ -45,6 +49,11 @@ def crashes_raw(context: AssetExecutionContext, postgres: PostgresResource):
                 f"COPY {SCHEMA}.{TABLE} ({col_list}) FROM STDIN WITH CSV",
                 f,
             )
+
+        cur.execute(
+            f"UPDATE {SCHEMA}.{TABLE} SET _src_file = %s",
+            (CSV_PATH.name,),
+        )
 
         cur.execute(f"SELECT COUNT(*) FROM {SCHEMA}.{TABLE}")
         row_count = cur.fetchone()[0]

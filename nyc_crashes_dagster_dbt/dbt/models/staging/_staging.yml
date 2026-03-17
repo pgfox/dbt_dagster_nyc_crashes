@@ -75,6 +75,12 @@ models:
                 min_value: 0
                 max_value: 1000
 
+      - name: loaded_at
+        description: Timestamp when the row was loaded into the raw table
+
+      - name: _src_file
+        description: Source CSV filename that produced this row
+
   - name: stg_persons
     description: Staged person records with typed date/time columns
     columns:
