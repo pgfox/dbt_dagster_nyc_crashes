@@ -51,22 +51,33 @@ deduped as (
             order by loaded_at desc
         ) as rn
     from source_data
+),
+
+standardized as (
+    select
+        d.collision_id, d.crash_date, d.crash_time, d.borough, d.zip_code,
+        d.latitude, d.longitude, d.location,
+        {{ replace_street_suffix('d.on_street_name', 'sa_on') }}       as on_street_name,
+        {{ replace_street_suffix('d.cross_street_name', 'sa_cross') }} as cross_street_name,
+        {{ replace_street_suffix('d.off_street_name', 'sa_off') }}     as off_street_name,
+        d.contributing_factor_vehicle_1, d.contributing_factor_vehicle_2,
+        d.contributing_factor_vehicle_3, d.contributing_factor_vehicle_4,
+        d.contributing_factor_vehicle_5,
+        d.vehicle_type_code_1, d.vehicle_type_code_2, d.vehicle_type_code_3,
+        d.vehicle_type_code_4, d.vehicle_type_code_5,
+        d.persons_injured, d.persons_killed,
+        d.pedestrians_injured, d.pedestrians_killed,
+        d.cyclist_injured, d.cyclist_killed,
+        d.motorist_injured, d.motorist_killed,
+        d.loaded_at, d._src_file
+    from deduped d
+    left join {{ ref('street_type_abbreviations') }} sa_on
+        on (regexp_match(d.on_street_name, '(\S+)$'))[1] = sa_on.abbreviation
+    left join {{ ref('street_type_abbreviations') }} sa_cross
+        on (regexp_match(d.cross_street_name, '(\S+)$'))[1] = sa_cross.abbreviation
+    left join {{ ref('street_type_abbreviations') }} sa_off
+        on (regexp_match(d.off_street_name, '(\S+)$'))[1] = sa_off.abbreviation
+    where d.rn = 1
 )
 
-select
-    collision_id, crash_date, crash_time, borough, zip_code,
-    latitude, longitude, location,
-    on_street_name, cross_street_name, off_street_name,
-    contributing_factor_vehicle_1, contributing_factor_vehicle_2,
-    contributing_factor_vehicle_3, contributing_factor_vehicle_4,
-    contributing_factor_vehicle_5,
-    vehicle_type_code_1, vehicle_type_code_2, vehicle_type_code_3,
-    vehicle_type_code_4, vehicle_type_code_5,
-    persons_injured, persons_killed,
-    pedestrians_injured, pedestrians_killed,
-    cyclist_injured, cyclist_killed,
-    motorist_injured, motorist_killed,
-    loaded_at,
-    _src_file
-from deduped
-where rn = 1
+select * from standardized

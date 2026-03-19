@@ -5,6 +5,7 @@ config-version: 2
 profile: nyc_crashes
 
 model-paths: ["models"]
+seed-paths: ["seeds"]
 test-paths: ["tests"]
 macro-paths: ["macros"]
 target-path: "target"
@@ -49,6 +50,10 @@ models:
             group: audit
       +materialized: table
       +schema: audit
+
+seeds:
+  nyc_crashes:
+    +schema: seeds
 
 tests:
   nyc_crashes:
