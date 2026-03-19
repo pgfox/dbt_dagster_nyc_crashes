@@ -8,6 +8,7 @@ models:
         description: Primary key
         tests:
           - not_null
+          - unique
 
       - name: crash_date
         description: Date of the crash
