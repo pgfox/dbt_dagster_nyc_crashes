@@ -10,6 +10,10 @@ models:
           - not_null
           - unique
 
+      - name: zip_code
+        tests:
+          - is_valid_zip
+
       - name: crash_date
         description: Date of the crash
         tests:

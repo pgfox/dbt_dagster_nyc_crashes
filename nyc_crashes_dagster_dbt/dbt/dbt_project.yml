@@ -43,6 +43,12 @@ models:
             group: marts
       +materialized: table
       +schema: marts
+    audit:
+      +meta:
+          dagster:
+            group: audit
+      +materialized: table
+      +schema: audit
 
 tests:
   nyc_crashes:
