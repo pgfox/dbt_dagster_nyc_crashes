@@ -59,3 +59,8 @@ tests:
   nyc_crashes:
     staging:
       +severity: warn
+    clean:
+      +severity: error
+      +store_failures: true
+      +store_failures_as: table
+      +schema: audit
