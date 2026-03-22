@@ -8,7 +8,10 @@ select
         when person_type in ('bicyclist', 'occupant', 'other motorized', 'pedestrian')
         then person_type
     end                                                     as person_type,
-    person_injury,
+    case
+        when person_injury in ('injured', 'killed')
+        then person_injury
+    end                                                     as person_injury,
     vehicle_id,
     bodily_injury,
     position_in_vehicle,

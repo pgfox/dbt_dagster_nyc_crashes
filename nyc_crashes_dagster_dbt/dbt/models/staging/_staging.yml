@@ -121,6 +121,12 @@ models:
               arguments:
                 values: [bicyclist, occupant, other motorized, pedestrian]
 
+      - name: person_injury
+        tests:
+          - accepted_values:
+              arguments:
+                values: [injured, killed]
+
   - name: stg_vehicles
     description: Staged vehicle records with typed date/time and numeric columns
     columns:

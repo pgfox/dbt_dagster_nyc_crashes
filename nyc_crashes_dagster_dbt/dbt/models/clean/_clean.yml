@@ -37,5 +37,11 @@ models:
               arguments:
                 values: [bicyclist, occupant, other motorized, pedestrian]
 
+      - name: person_injury
+        tests:
+          - accepted_values:
+              arguments:
+                values: [injured, killed]
+
   - name: stg_vehicles_clean
     description: Vehicle records that pass all data quality checks. Safe for downstream analytics consumption.
