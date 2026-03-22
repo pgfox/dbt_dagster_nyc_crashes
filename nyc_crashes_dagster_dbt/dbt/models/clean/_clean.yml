@@ -30,6 +30,12 @@ models:
 
   - name: stg_persons_clean
     description: Person records that pass all data quality checks. Safe for downstream analytics consumption.
+    columns:
+      - name: person_type
+        tests:
+          - accepted_values:
+              arguments:
+                values: [bicyclist, occupant, other motorized, pedestrian]
 
   - name: stg_vehicles_clean
     description: Vehicle records that pass all data quality checks. Safe for downstream analytics consumption.

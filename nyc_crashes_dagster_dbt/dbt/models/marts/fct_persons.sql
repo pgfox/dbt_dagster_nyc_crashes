@@ -9,10 +9,7 @@ with persons as (
         safety_equipment,
         complaint,
         person_sex,
-        case
-            when person_age ~ '^\d+$' then person_age::int
-            else null
-        end as person_age,
+        person_age,
         ejection,
         emotional_status
     from {{ ref('persons') }}
