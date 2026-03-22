@@ -13,3 +13,12 @@ select
 from {{ ref('stg_persons') }}
 where person_injury is not null
   and person_injury not in ('injured', 'killed')
+
+union all
+
+select
+    *,
+    'emotional_status is not a valid value: ' || emotional_status as reason
+from {{ ref('stg_persons') }}
+where emotional_status is not null
+  and emotional_status in ('unknown', 'does not apply')
