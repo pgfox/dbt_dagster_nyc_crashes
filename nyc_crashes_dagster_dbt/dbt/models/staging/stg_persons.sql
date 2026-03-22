@@ -19,5 +19,7 @@ select
     nullif(trim(lower(person_sex)), '')                 as person_sex,
     nullif(trim(lower(person_age)), '')                 as person_age,
     nullif(trim(lower(ejection)), '')                   as ejection,
-    nullif(trim(lower(emotional_status)), '')           as emotional_status
+    nullif(trim(lower(emotional_status)), '')           as emotional_status,
+    loaded_at,
+    _src_file
 from {{ source('raw', 'persons') }}
