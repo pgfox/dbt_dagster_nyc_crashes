@@ -1,3 +1,6 @@
+{% set core_persons = adapter.get_relation(
+    database=target.database, schema='core', identifier='persons') %}
+
 with source_data as (
     select
         unique_id,
@@ -26,6 +29,12 @@ with source_data as (
         loaded_at,
         _src_file
     from {{ source('raw', 'persons') }}
+    {% if core_persons is not none and not flags.FULL_REFRESH %}
+    where loaded_at > coalesce(
+        (select max(loaded_at) from {{ core_persons }}),
+        '1900-01-01'::timestamptz
+    )
+    {% endif %}
 ),
 
 deduped as (
