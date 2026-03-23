@@ -8,7 +8,12 @@ with source_data as (
         {{ dbt.safe_cast('crash_date', 'date') }}                           as crash_date,
         {{ dbt.safe_cast('crash_time', 'time') }}                           as crash_time,
         nullif(trim(lower(vehicle_id)), '')                                 as vehicle_id,
-        nullif(trim(lower(state_registration)), '')                         as state_registration,
+        case
+            when trim(lower(state_registration)) in (
+                select state_registration from {{ ref('invalid_state_registrations') }}
+            ) then null
+            else nullif(trim(lower(state_registration)), '')
+        end                                                                 as state_registration,
         nullif(trim(lower(vehicle_type)), '')                               as vehicle_type,
         nullif(trim(lower(vehicle_make)), '')                               as vehicle_make,
         nullif(trim(lower(vehicle_model)), '')                              as vehicle_model,
