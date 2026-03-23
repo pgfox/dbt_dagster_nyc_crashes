@@ -45,3 +45,7 @@ models:
 
   - name: stg_vehicles_clean
     description: Vehicle records that pass all data quality checks. Safe for downstream analytics consumption.
+    columns:
+      - name: row_hash
+        tests:
+          - not_null

@@ -1,3 +1,5 @@
+{{ config(materialized='incremental', unique_key='vehicle_damage_id') }}
+
 with source as (
     select
         {{ dbt_utils.generate_surrogate_key([

@@ -1,27 +1,52 @@
-select
-    unique_id,
-    collision_id,
-    {{ dbt.safe_cast('crash_date', 'date') }}                           as crash_date,
-    {{ dbt.safe_cast('crash_time', 'time') }}                           as crash_time,
-    nullif(trim(lower(vehicle_id)), '')                                 as vehicle_id,
-    nullif(trim(lower(state_registration)), '')                         as state_registration,
-    nullif(trim(lower(vehicle_type)), '')                               as vehicle_type,
-    nullif(trim(lower(vehicle_make)), '')                               as vehicle_make,
-    nullif(trim(lower(vehicle_model)), '')                              as vehicle_model,
-    nullif({{ dbt.safe_cast('vehicle_year', 'integer') }}, 9999)        as vehicle_year,
-    nullif(trim(lower(travel_direction)), '')                           as travel_direction,
-    nullif({{ dbt.safe_cast('vehicle_occupants', 'integer') }}, 999)    as vehicle_occupants,
-    nullif(trim(lower(driver_sex)), '')                                 as driver_sex,
-    nullif(trim(lower(driver_license_status)), '')                      as driver_license_status,
-    nullif(trim(lower(driver_license_jurisdiction)), '')                as driver_license_jurisdiction,
-    nullif(trim(lower(pre_crash)), '')                                  as pre_crash,
-    nullif(trim(lower(point_of_impact)), '')                            as point_of_impact,
-    nullif(trim(lower(vehicle_damage)), '')                             as vehicle_damage,
-    nullif(trim(lower(vehicle_damage_1)), '')                           as vehicle_damage_1,
-    nullif(trim(lower(vehicle_damage_2)), '')                           as vehicle_damage_2,
-    nullif(trim(lower(vehicle_damage_3)), '')                           as vehicle_damage_3,
-    nullif(trim(lower(public_property_damage)), '')                     as public_property_damage,
-    nullif(trim(lower(public_property_damage_type)), '')                as public_property_damage_type,
-    nullif(trim(lower(contributing_factor_1)), '')                      as contributing_factor_1,
-    nullif(trim(lower(contributing_factor_2)), '')                      as contributing_factor_2
-from {{ source('raw', 'vehicles') }}
+{% set core_crashed_vehicle = adapter.get_relation(
+    database=target.database, schema='core', identifier='crashed_vehicle') %}
+
+with source_data as (
+    select
+        unique_id,
+        collision_id,
+        {{ dbt.safe_cast('crash_date', 'date') }}                           as crash_date,
+        {{ dbt.safe_cast('crash_time', 'time') }}                           as crash_time,
+        nullif(trim(lower(vehicle_id)), '')                                 as vehicle_id,
+        nullif(trim(lower(state_registration)), '')                         as state_registration,
+        nullif(trim(lower(vehicle_type)), '')                               as vehicle_type,
+        nullif(trim(lower(vehicle_make)), '')                               as vehicle_make,
+        nullif(trim(lower(vehicle_model)), '')                              as vehicle_model,
+        nullif({{ dbt.safe_cast('vehicle_year', 'integer') }}, 9999)        as vehicle_year,
+        nullif(trim(lower(travel_direction)), '')                           as travel_direction,
+        nullif({{ dbt.safe_cast('vehicle_occupants', 'integer') }}, 999)    as vehicle_occupants,
+        nullif(trim(lower(driver_sex)), '')                                 as driver_sex,
+        nullif(trim(lower(driver_license_status)), '')                      as driver_license_status,
+        nullif(trim(lower(driver_license_jurisdiction)), '')                as driver_license_jurisdiction,
+        nullif(trim(lower(pre_crash)), '')                                  as pre_crash,
+        nullif(trim(lower(point_of_impact)), '')                            as point_of_impact,
+        nullif(trim(lower(vehicle_damage)), '')                             as vehicle_damage,
+        nullif(trim(lower(vehicle_damage_1)), '')                           as vehicle_damage_1,
+        nullif(trim(lower(vehicle_damage_2)), '')                           as vehicle_damage_2,
+        nullif(trim(lower(vehicle_damage_3)), '')                           as vehicle_damage_3,
+        nullif(trim(lower(public_property_damage)), '')                     as public_property_damage,
+        nullif(trim(lower(public_property_damage_type)), '')                as public_property_damage_type,
+        nullif(trim(lower(contributing_factor_1)), '')                      as contributing_factor_1,
+        nullif(trim(lower(contributing_factor_2)), '')                      as contributing_factor_2,
+        loaded_at,
+        _src_file
+    from {{ source('raw', 'vehicles') }}
+    {% if core_crashed_vehicle is not none %}
+    where loaded_at > coalesce(
+        (select max(loaded_at) from {{ core_crashed_vehicle }}),
+        '1900-01-01'::timestamptz
+    )
+    {% endif %}
+),
+
+deduped as (
+    select
+        *,
+        row_number() over (
+            partition by unique_id
+            order by loaded_at desc
+        ) as rn
+    from source_data
+)
+
+select * from deduped where rn = 1
